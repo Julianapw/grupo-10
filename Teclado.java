@@ -38,4 +38,22 @@ public class Teclado
 
         return ret;
     }
+
+    public static byte getUmByte () throws Exception
+    {
+        byte ret=0;
+
+        try
+        {
+            ret = Byte.parseByte (teclado.readLine ());
+        }
+        catch (IOException erro)
+        {}
+        catch (NumberFormatException erro)
+        {
+            throw new Exception ("Byte invalido!");
+        }
+
+        return ret;
+    }
 }

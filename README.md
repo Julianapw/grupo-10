@@ -9,5 +9,5 @@
 ### 29/09/2026 - 19h20 - 21h
 
 ### Ana Beatriz: Desenvolvimento das classes de tarefa ordenadora e juntadora
-### Júlia: Desenvolvimento das classes de progama (main) e lógica de ordenação sem paralelismo usando merge sort
+### Júlia: Desenvolvimento das classes de progama (main) e lógica de ordenação sem paralelismo usando merge sort, ajuste classe Teclado
 ### Juliana: Desenvolvimento da classe de Merge Sort e lógica de ordenação sem paralelismo usando merge sort
