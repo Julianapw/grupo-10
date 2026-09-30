@@ -10,11 +10,11 @@ public class Programa
 
             while (tamanhoVetor <= 0)
             {
-                System.out.print("Tamanho inválido! Digite novamente: ");
+                System.out.print("Tamanho invalido! Digite novamente: ");
                 tamanhoVetor = Teclado.getUmInt();
             }
 
-            int[] vetor = new int[tamanhoVetor];
+            byte[] vetor = new byte[tamanhoVetor];
             
             System.out.println();
             System.out.println("Opcoes de preenchimento:");
@@ -26,7 +26,7 @@ public class Programa
 
             while (opcao != 1 && opcao != 2)
             {
-                System.out.println("Opcao inválida! Digite novamente: ");
+                System.out.println("Opcao invalida! Digite novamente: ");
                 opcao = Teclado.getUmInt();
             }
 
@@ -35,25 +35,36 @@ public class Programa
                 for (int i=0; i<vetor.length; i++)
                 {
                     System.out.print ("vetor["+i+"] = ");
-                    vetor[i] = Teclado.getUmInt ();
+                    while (true) {
+                        try {
+                            vetor[i] = Teclado.getUmByte();
+                            break;
+                        } catch (Exception e) {
+                            System.out.print("Valor invalido! Digite novamente: ");
+                        }
+                    }
                 }
             }
             else
             {
                 for (int i=0; i<vetor.length; i++)
-                    vetor[i] = (int)(Math.random()*1000);
+                    vetor[i] = (byte)(Math.random()*1000);
             }
 
             long inicio = System.currentTimeMillis();
 
-            
+            int qtdProcessadores = Runtime.getRuntime().availableProcessors();
+            int qtdThreads = Math.min(qtdProcessadores, tamanhoVetor);
 
+            Fase1 fase1 = new Fase1(vetor, qtdThreads);
+            fase1.iniciarFase1();
 
+            byte[][] subVetores = fase1.getSubVetores();
 
+            Fase2 fase2 = new Fase2(subVetores);
+            fase2.iniciarFase2();
 
-
-
-
+            vetor = fase2.getVetorResultado();
 
             long fim = System.currentTimeMillis();
             System.out.println("Tempo de execucao: " + (fim - inicio) + " ms");

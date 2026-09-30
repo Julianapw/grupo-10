@@ -10,11 +10,11 @@ public class Programa2
 
             while (tamanhoVetor <= 0)
             {
-                System.out.print("Tamanho inválido! Digite novamente: ");
+                System.out.print("Tamanho invalido! Digite novamente: ");
                 tamanhoVetor = Teclado.getUmInt();
             }
 
-            int[] vetor = new int[tamanhoVetor];
+            byte[] vetor = new byte[tamanhoVetor];
             
             System.out.println();
             System.out.println("Opcoes de preenchimento:");
@@ -26,7 +26,7 @@ public class Programa2
 
             while (opcao != 1 && opcao != 2)
             {
-                System.out.println("Opcao inválida! Digite novamente: ");
+                System.out.println("Opcao invalida! Digite novamente: ");
                 opcao = Teclado.getUmInt();
             }
 
@@ -35,28 +35,29 @@ public class Programa2
                 for (int i=0; i<vetor.length; i++)
                 {
                     System.out.print ("vetor["+i+"] = ");
-                    vetor[i] = Teclado.getUmInt ();
+                    while (true) {
+                        try {
+                            vetor[i] = Teclado.getUmByte();
+                            break;
+                        } catch (Exception e) {
+                            System.out.print("Valor invalido! Digite novamente: ");
+                        }
+                    }
                 }
             }
             else
             {
                 for (int i=0; i<vetor.length; i++)
-                    vetor[i] = (int)(Math.random()*1000);
+                    vetor[i] = (byte)(Math.random()*1000);
             }
 
             long inicio = System.currentTimeMillis();
 
-
-
-
-
-
-
-
-
+            MergeSort.ordene(vetor, 0, vetor.length - 1);
 
             long fim = System.currentTimeMillis();
             System.out.println("Tempo de execucao: " + (fim - inicio) + " ms");
+
 
             System.out.println();
             System.out.print( "Deseja printar quantos valores do vetor? De 0 (nao printar) a 100 (no max, para nao ficar muito longo):  ");

@@ -25,7 +25,3 @@ public class TarefaOrdenadora extends Thread
         return this.vetor;
     }
 }
-
-//“A main divide o vetor grande em partes. 
-// Cada objeto TarefaOrdenadora recebe uma dessas partes e executa MergeSort nela. 
-// Depois do join(), a main pega os pedaços ordenados e passa dois a dois para as TarefaJuntadora.”
