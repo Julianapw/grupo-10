@@ -17,11 +17,17 @@ public class TarefaJuntadora extends Thread
     @Override
     public void run ()
     {
-        System.out.println ("Thread juntadora iniciou: " + this.getName());
+        try{
+            System.out.println ("Thread juntadora iniciou: " + this.getName());
 
-        this.resultado = MergeSort.intercale (this.vetor1, this.vetor2);
+            this.resultado = MergeSort.intercale (this.vetor1, this.vetor2);
 
-        System.out.println ("Thread juntadora terminou: " + this.getName());
+            System.out.println ("Thread juntadora terminou: " + this.getName());
+        }
+        catch(OutOfMemoryError e) {
+            System.out.println("Erro: Memoria insuficiente para alocar um vetor deste tamanho!");
+            System.exit(1);
+        }
     }
 
     public byte[] getResultado ()

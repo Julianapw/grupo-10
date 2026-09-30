@@ -6,10 +6,13 @@ public class Fase2 {
     }
 
     public void iniciarFase2() throws Exception {
+        int rodada = 1;
         while (this.subVetores.length > 1) {
             int metade = this.subVetores.length / 2;
             int restoSub = this.subVetores.length % 2;
             
+            System.out.println(" Rodada " + rodada + " da Fase 2: " + metade + " thread(s) juntadora(s)");
+
             byte[][] proximosSubVetores = new byte[metade + restoSub][];
             TarefaJuntadora[] threadsJunt = new TarefaJuntadora[metade];
 
@@ -28,6 +31,7 @@ public class Fase2 {
             }
 
             this.subVetores = proximosSubVetores;
+            rodada++;
         }
     }
 
