@@ -28,3 +28,9 @@ Durante o desenvolvimento, a equipe pôde observar na prática os desafios e as 
 
 ## Relato breve (até 10 linhas) sobre os testes realizados.
 Os testes avaliaram vetores de 50, 10.000 e até 1.000.000.000 de elementos. A execução paralela operou com 12 processadores e 11 threads ordenadoras. No vetor menor, a versão sequencial foi superior (0 ms), pois o custo de criar e sincronizar threads excedeu o tempo de ordenação. Contudo, no teste extremo de 1 milhão de posições, o paralelismo se provou mais eficiente, finalizando o trabalho em apenas 14988 ms e provando que a divisão de tarefas compensa o custo adicional em grandes volumes, enquanto o teste com 1 milhão de elementos na ordenação sem paralelismo demorou 78137ms. Cabe ressaltar também que os println() dentro das threads geram um alto custo de I/O, logo, embora exigidos pela atividade, esses logs tornam a versão paralela artificialmente mais lenta em comparações puras de desempenho.
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
