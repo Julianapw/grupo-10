@@ -4,6 +4,7 @@ public class ClienteDistribuido
 {
     public static void main(String[] args)
     {
+        boolean solicitacaoIniciada = false;
         if (args.length == 0)
         {
             System.err.println("Uso: java ClienteDistribuido host:porta [host:porta ...]");
@@ -14,8 +15,9 @@ public class ClienteDistribuido
         {
             EnderecoServidor[] servidores = lerServidores(args);
 
-            System.out.print(" ORDENACAO DE VETORES COM PARALELISMO DISTRIBUIDO ");
             System.out.println();
+            System.out.println("========== Nova solicitacao ==========");
+            solicitacaoIniciada = true;
             System.out.print("Digite o tamanho do vetor: ");
             int tamanho = Teclado.getUmInt();
             while (tamanho <= 0)
@@ -62,6 +64,11 @@ public class ClienteDistribuido
                 new Random().nextBytes(vetor);
             }
 
+            System.out.println();
+            System.out.println("Vetor preparado: " + vetor.length + " elemento(s).");
+            int qtdServidores = Math.min(vetor.length, servidores.length);
+            System.out.println("Distribuindo entre " + qtdServidores + " servidor(es).");
+
             long inicio = System.currentTimeMillis();
             byte[][] partes = distribuir(vetor, servidores);
             vetor = null;
@@ -71,24 +78,29 @@ public class ClienteDistribuido
             vetor = fase2.getVetorResultado();
             long fim = System.currentTimeMillis();
 
-            System.out.println("Qtd. de servidores: " + servidores.length);
-            System.out.println("Tempo de execucao: " +
-                (fim - inicio) + " ms");
-            System.out.println("Vetor ordenado corretamente: " + estaOrdenado(vetor));
+            System.out.println("Ordenacao concluida.");
+            System.out.println("Servidores utilizados: " + partes.length);
+            System.out.println("Vetor ordenado: " + estaOrdenado(vetor));
+            System.out.println("Tempo total: " + (fim - inicio) + " ms.");
             exibirVetor(vetor);
         }
         catch (OutOfMemoryError erro)
         {
-            System.err.println("Memoria insuficiente para ordenar esse vetor.");
+            System.err.println("ERRO: Memoria insuficiente para ordenar esse vetor.");
         }
         catch (InterruptedException erro)
         {
             Thread.currentThread().interrupt();
-            System.err.println("Cliente interrompido enquanto aguardava os servidores.");
+            System.err.println("ERRO: Cliente interrompido enquanto aguardava os servidores.");
         }
         catch (Exception erro)
         {
-            System.err.println("Erro: " + erro.getMessage());
+            System.err.println("ERRO: Falha na solicitacao: " + erro.getMessage());
+        }
+        finally
+        {
+            if (solicitacaoIniciada)
+                System.out.println("========== Fim da solicitacao ==========");
         }
     }
 
@@ -117,16 +129,17 @@ public class ClienteDistribuido
         return servidores;
     }
 
-    private static byte[][] distribuir(byte[] vetor, EnderecoServidor[] servidores)
-        throws InterruptedException, Exception
+    private static byte[][] distribuir(byte[] vetor, EnderecoServidor[] servidores) throws InterruptedException, Exception
     {
-        byte[][] partes = new byte[servidores.length][];
-        ConversaComServidor[] conversas = new ConversaComServidor[servidores.length];
-        int tamanhoBase = vetor.length / servidores.length;
-        int resto = vetor.length % servidores.length;
+        int qtdServidoresUsados = Math.min(vetor.length, servidores.length);
+        byte[][] partes = new byte[qtdServidoresUsados][];
+        ConversaComServidor[] conversas =
+            new ConversaComServidor[qtdServidoresUsados];
+        int tamanhoBase = vetor.length / qtdServidoresUsados;
+        int resto = vetor.length % qtdServidoresUsados;
         int inicio = 0;
 
-        for (int i = 0; i < servidores.length; i++)
+        for (int i = 0; i < qtdServidoresUsados; i++)
         {
             int tamanhoParte = tamanhoBase + (i < resto ? 1 : 0);
             byte[] fatia = new byte[tamanhoParte];
@@ -141,7 +154,7 @@ public class ClienteDistribuido
         {
             conversa.join();
             if (!conversa.deuCerto())
-                throw new Exception("Um servidor falhou; o resultado seria incompleto.");
+                throw new Exception("Falha no servidor " + conversa.getEndereco() + ": " + conversa.getErro());
         }
 
         for (int i = 0; i < conversas.length; i++)
@@ -172,6 +185,7 @@ public class ClienteDistribuido
             System.out.print("Opcao invalida! Digite novamente: ");
             opcao = Teclado.getUmInt();
         }
+        System.out.println();
 
         if (opcao == 1)
         {

@@ -10,6 +10,7 @@ public class ConversaComServidor extends Thread
 
     private byte[] resultado;
     private boolean deuCerto;
+    private String erro;
 
     public ConversaComServidor(String host, int porta, byte[] vetor)
     {
@@ -20,38 +21,78 @@ public class ConversaComServidor extends Thread
 
     public void run()
     {
+        Socket conexao = null;
+        Parceiro servidor = null;
+
         try
         {
-            Socket conexao = new Socket(this.host, this.porta);
-            
-            ObjectOutputStream transmissor =
-            new ObjectOutputStream(conexao.getOutputStream());
-            
-            ObjectInputStream receptor =
-            new ObjectInputStream(conexao.getInputStream());
-            
-            Parceiro servidor =
-            new Parceiro(conexao, receptor, transmissor);
+            conexao = new Socket(this.host, this.porta);
 
-            System.out.println ("Enviando para "+this.host+":"+this.porta+
-                                " -> soma de "+this.inicio+" ate "+this.fim);
+            ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
+            ObjectInputStream receptor = new ObjectInputStream(conexao.getInputStream());
+            servidor = new Parceiro(conexao, receptor, transmissor);
 
             servidor.receba(new PedidoDeOrdenacao(this.vetor));
-
             Comunicado comunicado = servidor.envie();
 
             if (comunicado instanceof Resultado)
             {
-                this.resultado = ((Resultado)comunicado).getVetor();
+                byte[] vetorRecebido =
+                    ((Resultado) comunicado).getVetor();
+
+                if (vetorRecebido == null)
+                    throw new Exception("O servidor devolveu um vetor nulo.");
+
+                if (vetorRecebido.length != this.vetor.length)
+                    throw new Exception("O servidor devolveu uma quantidade incorreta de elementos.");
+
+                for (int i = 1; i < vetorRecebido.length; i++)
+                {
+                    if (vetorRecebido[i - 1] > vetorRecebido[i])
+                        throw new Exception("O servidor devolveu um vetor fora de ordem.");
+                }
+
+                this.resultado = vetorRecebido;
                 this.deuCerto = true;
             }
-
-            servidor.receba(new PedidoParaSair());
-            servidor.adeus();
+            else
+            {
+                throw new Exception("Resposta inesperada do servidor.");
+            }
         }
         catch (Exception erro)
         {
-            System.err.println("Falha com o servidor " +this.host+":"+this.porta);
+            this.deuCerto = false;
+            this.resultado = null;
+            this.erro = erro.getMessage();
+        }
+        finally
+        {
+            if (servidor != null)
+            {
+                try
+                {
+                    servidor.receba(new PedidoParaSair());
+                }
+                catch (Exception erro)
+                {}
+
+                try
+                {
+                    servidor.adeus();
+                }
+                catch (Exception erro)
+                {}
+            }
+            else if (conexao != null)
+            {
+                try
+                {
+                    conexao.close();
+                }
+                catch (Exception erro)
+                {}
+            }
         }
     }
 
@@ -63,5 +104,15 @@ public class ConversaComServidor extends Thread
     public byte[] getResultado()
     {
         return this.resultado;
+    }
+
+    public String getEndereco()
+    {
+        return this.host + ":" + this.porta;
+    }
+
+    public String getErro()
+    {
+        return this.erro == null ? "Falha desconhecida." : this.erro;
     }
 }

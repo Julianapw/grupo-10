@@ -8,7 +8,7 @@ public class ServidorDistribuido
     {
         if (args.length>1)
         {
-            System.err.println ("Uso esperado: java ServidorDistribuido [PORTA]\n");
+            System.err.println("Uso: java ServidorDistribuido [PORTA]");
             return;
         }
 
@@ -26,11 +26,10 @@ public class ServidorDistribuido
         }
         catch (Exception erro)
         {
-            System.err.println ("Escolha uma porta apropriada e liberada para uso!\n");
+            System.err.println("Nao foi possivel iniciar na porta " + porta + ": " + erro.getMessage());
             return;
         }
 
-        System.out.println ("ServidorDistribuido ativo na porta "+porta+".");
-        System.out.println ("Para desativa-lo, use Ctrl+C\n");
+        System.out.println("Servidor ativo na porta " + porta + ". Aguardando solicitacoes.");
     }
 }

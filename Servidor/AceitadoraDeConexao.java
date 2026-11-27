@@ -13,8 +13,7 @@ public class AceitadoraDeConexao extends Thread
 
         try
         {
-            this.pedido =
-            new ServerSocket (Integer.parseInt(porta));
+            this.pedido = new ServerSocket (Integer.parseInt(porta));
         }
         catch (Exception  erro)
         {
@@ -44,11 +43,19 @@ public class AceitadoraDeConexao extends Thread
             SupervisoraDeConexao supervisoraDeConexao=null;
             try
             {
-                supervisoraDeConexao =
-                new SupervisoraDeConexao (conexao, usuarios);
+                supervisoraDeConexao = new SupervisoraDeConexao (conexao, usuarios);
             }
             catch (Exception erro)
-            {}
+            {
+                try
+                {
+                    if (conexao != null)
+                        conexao.close();
+                }
+                catch (Exception fechamento)
+                {}
+                continue;
+            }
             supervisoraDeConexao.start();
         }
     }
